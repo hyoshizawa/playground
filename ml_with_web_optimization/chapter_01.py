@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def main_01():
+def ch01_01():
     """
 
     """
@@ -44,9 +44,8 @@ def main_01():
     plt.show()
 
 
-def main_02():
-    """
-    Binomial
+def ch01_02():
+    """ Binomial distribution
     """
     thetas = np.linspace(0, 1, 1001)
     print(thetas)
@@ -65,3 +64,45 @@ def main_02():
     plt.ylabel(r'$p(\theta)$')
     plt.xlim(0, 0.2)
     plt.legend()
+    plt.subplot(2, 1, 2)
+    plt.plot(thetas, posterior(64, 1280, prior), label='Bob - A')
+    plt.plot(thetas, posterior(128, 1600, prior), label='Bob - B')
+    plt.xlabel(r'$\theta$')
+    plt.ylabel(r'$p(\theta)$')
+    plt.xlim(0, 0.2)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+def ch01_03():
+    """
+        theta ~ Beta.
+        alpha ~ Binomial.
+    """
+    thetas = np.linspace(0, 1, 1001)
+    print(thetas)
+
+    def betaf(alpha, beta):
+        numerator = thetas ** (alpha - 1) * (1 - thetas) ** (beta - 1)
+        return numerator / numerator.sum()
+
+    def posterior(a, N):
+        return betaf(a + 1, N - a + 1)
+
+    plt.subplot(2, 1, 1)
+    plt.plot(thetas, posterior(2, 40), label='Alice - A')
+    plt.plot(thetas, posterior(4, 50), label='Alice - B')
+    plt.xlabel(r'$\theta$')
+    plt.ylabel(r'$p(\theta)$')
+    plt.xlim(0, 0.2)
+    plt.legend()
+    plt.subplot(2, 1, 2)
+    plt.plot(thetas, posterior(64, 1280), label='Bob - A')
+    plt.plot(thetas, posterior(128, 1600), label='Bob - B')
+    plt.xlabel(r'$\theta$')
+    plt.ylabel(r'$p(\theta)$')
+    plt.xlim(0, 0.2)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
