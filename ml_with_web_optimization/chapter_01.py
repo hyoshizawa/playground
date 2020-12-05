@@ -1,4 +1,9 @@
 """
+
+Some notes:
+    HDI: Highest Density Interval.
+    ROPE: Region of Practical Equivalence.
+
 """
 import numpy as np
 from matplotlib import pyplot as plt
@@ -113,11 +118,11 @@ def ch01_04():
 
     """
     def hmv(xs, ps, alpha=0.95):
-        """
+        """ Highest Mass Value function.
         Parameters:
-            xs :
-            ps : 
-            alpha : 
+            xs : Probability variables.
+            ps : Probability Mass.
+            alpha : threshold.
         Return:
 
         """
@@ -148,4 +153,60 @@ def ch01_04():
                  ha='left', va='bottom')
     plt.annotate('95% HDI', xy=(hm_thetas.mean(), 0),
                  ha='center', va='bottom')
-    # restart here.
+    hm_region = (hm_thetas.min() < thetas) & (thetas < hm_thetas.max())
+    plt.fill_between(thetas[hm_region], ps[hm_region], 0, alpha=0.3)
+    plt.xlabel(r'$\theta$')
+    plt.ylabel(r'$p(\theta)$')
+    plt.xlim(0, 0.3)
+    plt.tight_layout()
+    plt.show()
+
+    def plot_hdi(ps, label):
+        """ """
+        hm_thetas = hmv(thetas, ps, 0.95)
+        plt.plot(thetas, ps)
+        plt.annotate('', xy=(hm_thetas.min(), 0),
+                    xytext=(hm_thetas.max(), 0),
+                    arrowprops=dict(color='black', shrinkA=0, shrinkB=0,
+                                    arrowstyle='<->', linewidth=2))
+        plt.annotate('%.3f' % hm_thetas.min(), xy=(hm_thetas.min(), 0),
+                    ha='right', va='bottom')
+        plt.annotate('%.3f' % hm_thetas.max(), xy=(hm_thetas.max(), 0),
+                    ha='left', va='bottom')
+        plt.annotate('95% HDI', xy=(hm_thetas.mean(), 0),
+                    ha='center', va='bottom')
+        hm_region = (hm_thetas.min() < thetas) & (thetas < hm_thetas.max())
+        plt.fill_between(thetas[hm_region], ps[hm_region], 0, alpha=0.3)
+        plt.xlim(0, 0.3)
+        plt.ylabel(label)
+        plt.yticks([])
+
+    plt.subplot(4, 1, 1)
+    alice_a = posterior(2, 40)
+    plot_hdi(alice_a, 'Alice A')
+    plt.subplot(4, 1, 2)
+    alice_b = posterior(4, 50)
+    plot_hdi(alice_b, 'Alice B')
+    plt.subplot(4, 1, 3)
+    bob_a = posterior(64, 1280)
+    plot_hdi(bob_a, 'Bob A')
+    plt.subplot(4, 1, 4)
+    bob_b = posterior(128, 1600)
+    plot_hdi(bob_b, 'Bob B')
+    plt.xlabel(r'$\theta$')
+    plt.tight_layout()
+    plt.show
+
+
+def ch01_05():
+    """
+    """
+    theta_a = np.random.beta(3, 39, size=100000)
+    theta_b = np.random.beta(5, 47, size=100000)
+    delta = theta_b - theta_a
+    plt.hist(delta, range=(-0.3, 0.3), bins=60)
+    plt.xlabel(r'$\delta$')
+    plt.ylabel(r'Frequency')
+    plt.show()
+
+    print((delta > 0).mean())
