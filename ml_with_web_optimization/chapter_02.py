@@ -3,6 +3,7 @@
 Some notes:
     MCMC: Markov chain Monte Carlo
     burn-in
+    NHST: Null Hypothesis Significance Testing
 
 For colab:
     !pip install -U ariviz==0.9.0 pymc3==3.9.3
@@ -94,3 +95,25 @@ def ch02_02():
     plt.ylabel(r'$p(m)$')
     plt.legend()
     plt.show()
+
+
+def ch02_03():
+    """
+    theta ~ Uniform(0, 3000)
+    t ~ Exponential(theta)
+    """
+    import urllib
+    url = 'https://www.oreilly.co.jp/pub/9784873119168/data/time-on-page.csv'
+    response = urllib.request.urlopen(url)
+    data = [int(row.strip()) for row in response.readlines()]
+    plt.hist(data, bins=50)
+    plt.show()
+
+    with pm.Model() as model:
+        theta = pm.Uniform('theta', lower=0, upper=3000)
+        obs = pm.Exponential('obs', lam=1/theta, observed=data)
+        trace = pm.sample(5000, chains=2)
+        pm.traceplot(trace)
+
+    with model:
+        pm.plot_posterior(trace, hdi_prob=0.95)
