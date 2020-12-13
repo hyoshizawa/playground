@@ -2,6 +2,7 @@
 
 """
 import numpy as np
+import matplotlib.ticker as ticker
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -62,7 +63,7 @@ class HillClimbing():
             self.current_x = neighbor_xs[
                 neighbor_fs.index(max(neighbor_fs))]
             self.current_f = max(neighbor_fs)
-        reuturn (old_f, self.current_x)
+        return (old_x, self.current_x)
 
 
 def ch04_01():
@@ -85,4 +86,59 @@ def ch04_01():
     plt.show()
 
 
-    
+def ch04_02():
+    """ """
+    size = 5
+    _x1, _x2 = np.meshgrid(np.arange(size), np.arange(size))
+    x1, x2 = _x1.ravel(), _x2.ravel()
+    f = lambda x1, x2: 0.5 * x1 + x2 - 0.3 * x1 * x2
+
+    init_x = (0, 0)
+    init_f = f(init_x[0], init_x[1])
+    hc = HillClimbing(init_x, init_f, size)
+
+    evaluated_xs = {init_x}
+    steps = []
+
+    for _ in range(6):
+        neighbor_xs = hc.get_neighbors()
+        neighbor_fs = [f(x[0], x[1]) for x in neighbor_xs]
+        step = hc.update(neighbor_xs, neighbor_fs)
+
+        print('%s -> %s' % (step))
+        steps.append(step)
+        evaluated_xs.update(neighbor_xs)
+
+    def visualize_path(evaluated_xs, steps):
+        """"""
+        fig, ax = plt.subplots(figsize=(5, 5))
+        ax.set_xlim(-.5, size - .5)
+        ax.set_ylim(-.5, size - .5)
+
+        for i in range(size):
+            for j in range(size):
+                if (i, j) in evaluated_xs:
+                    ax.text(i, j, '%.1f' % (f(i, j)), ha='center', va='center',
+                            bbox=dict(edgecolor='gray', facecolor='none',
+                                      linewidth=2))
+                else:
+                    ax.text(i, j, '%.1f' % (f(i, j)), ha='center', va='center')
+
+        ax.set_xlabel('$x_1$')
+        ax.set_ylabel('$x_2$')
+        ax.xaxis.set_minor_locator(
+            ticker.FixedLocator(np.arange(-.5, size - .5, 1)))
+        ax.yaxis.set_minor_locator(
+            ticker.FixedLocator(np.arange(-.5, size - .5, 1)))
+        plt.tick_params(axis='both', which='both', bottom='off', top='off',
+                        left='off', right='off', labelbottom='off',
+                        labelleft='off')
+        ax.grid(True, which='minor')
+        ax.grid(False, which='minor')
+
+        for step in steps:
+            ax.annotate('', xy=step[1], xytext=step[0],
+                        arrowprops=dict(shrink=0.2, width=2, lw=0))
+
+
+    visualize_path(evaluated_xs, steps)
