@@ -2,6 +2,7 @@
 
 """
 import numpy as np
+from matplotlib import pyplot as plt
 np.random.seed(0)
 
 n_arms = 4
@@ -51,3 +52,14 @@ def sim(Agent, N=1000, T=1000, **kwargs):
             selected_arms[n][t] = arm
             earned_rewards[n][t] = reward
     return np.array(selected_arms), np.array(earned_rewards)
+
+
+def ch05_01():
+    """ """
+    arms_eg, rewards_eg = sim(EpsilonGreedyAgent)
+    acc = np.mean(arms_eg == Env.opt(), axis=0)
+
+    plt.plot(acc)
+    plt.xlabel(r'$t$')
+    plt.ylabel(r'$\mathbb{E}[x(t) = x^*]$')
+    plt.show()
