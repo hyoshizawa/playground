@@ -116,7 +116,7 @@ class BernoulliTSAgent(object):
         self.counts = [0 for _ in range(n_arms)]
         self.wins = [0 for _ in range(n_arms)]
 
-    def get_arms(self):
+    def get_arm(self):
         beta = lambda N, a: np.random.beta(a + 1, N - a + 1)
         result = [beta(self.counts[i], self.wins[i]) for i in range(n_arms)]
         arm = result.index(max(result))
@@ -175,6 +175,21 @@ def ch05_03():
     plt.plot(np.mean(arms_asm == Env.opt(), axis=0),
              label='Annealing Softmax')
     plt.plot(np.mean(arms_sm == Env.opt(), axis=0), label='softmax')
+    plt.xlabel(r'$t$')
+    plt.ylabel(r'$\mathbb{E}[x(t) = x^*]$')
+    plt.legend()
+    plt.show()
+
+
+def ch05_04():
+    """"""
+    arms_ts, rewards_ts = sim(BernoulliTSAgent)
+    arms_asm, rewards_asm = sim(AnnealingSoftmaxAgent)
+
+    plt.plot(np.mean(arms_ts == Env.opt(), axis=0),
+             label='Thompson Sampling')
+    plt.plot(np.mean(arms_asm == Env.opt(), axis=0),
+             label='Annealing Softmax')
     plt.xlabel(r'$t$')
     plt.ylabel(r'$\mathbb{E}[x(t) = x^*]$')
     plt.legend()
